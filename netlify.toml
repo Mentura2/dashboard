@@ -1,6 +1,6 @@
 [build]
-  command = "npm run build" # Der Build-Befehl
-  publish = "out"           # Das Verzeichnis, in dem die gebauten Dateien liegen
+  command = "npm run build"
+  publish = "out"
 
 [[plugins]]
-  package = "@netlify/plugin-nextjs" # Netlify-Plugin für Next.js
+  package = "@netlify/plugin-nextjs"

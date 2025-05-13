@@ -1,8 +1,9 @@
-// filepath: [next.config.ts](http://_vscodecontentref_/0)
+// filepath: c:\Users\dietz\Desktop\Code\Dashboard\frontend\dashboard-app\next.config.ts
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  output: "standalone", // Für statische Builds
+  output: "export", // Aktiviert den statischen Export
+  trailingSlash: true, // Fügt einen Slash am Ende der URLs hinzu (für Netlify empfohlen)
 };
 
 export default nextConfig;
