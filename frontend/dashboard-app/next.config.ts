@@ -1,7 +1,8 @@
+// filepath: [next.config.ts](http://_vscodecontentref_/0)
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  output: "standalone", // Für statische Builds
 };
 
 export default nextConfig;
