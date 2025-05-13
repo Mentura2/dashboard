@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import WeatherWidget from "@/widgets/weather";
+import { Layout } from "react-grid-layout";
 import NotesWidget from "@/widgets/notes";
 import TimerWidget from "@/widgets/timer";
 import ToDoWidget from "@/widgets/todo";
@@ -23,58 +24,64 @@ export default function Home() {
     notes: { width: 300, height: 200 },
   });
 
-  const [layout, setLayout] = useState(() => {
-    // Lade gespeichertes Layout aus LocalStorage
-    const savedLayout = localStorage.getItem("dashboardLayout");
-    return savedLayout
-      ? JSON.parse(savedLayout)
-      : [
-          { i: "weather", x: 0, y: 0, w: 2, h: 3, minW: 2, minH: 3 },
-          { i: "finance", x: 2, y: 0, w: 2, h: 6, minW: 2, minH: 6 },
-          { i: "todo", x: 4, y: 0, w: 2, h: 8, minW: 2, minH: 3 },
-          {
-            i: "timer",
-            x: 6,
-            y: 0,
-            w: 2,
-            h: 4,
-            minW: 1,
-            maxW: 4,
-            minH: 4,
-            maxH: 10,
-          },
-          {
-            i: "notes",
-            x: 8,
-            y: 0,
-            w: 2,
-            h: 4,
-            minW: 2,
-            maxW: 6,
-            minH: 4,
-            maxH: 10,
-          },
-        ];
+  const [layout, setLayout] = useState<Layout[]>(() => {
+    if (typeof window !== "undefined") {
+      const savedLayout = localStorage.getItem("dashboardLayout");
+      return savedLayout
+        ? JSON.parse(savedLayout)
+        : [
+            { i: "weather", x: 0, y: 0, w: 2, h: 3, minW: 2, minH: 3 },
+            { i: "finance", x: 2, y: 0, w: 2, h: 6, minW: 2, minH: 6 },
+            { i: "todo", x: 4, y: 0, w: 2, h: 8, minW: 2, minH: 3 },
+            {
+              i: "timer",
+              x: 6,
+              y: 0,
+              w: 2,
+              h: 4,
+              minW: 1,
+              maxW: 4,
+              minH: 4,
+              maxH: 10,
+            },
+            {
+              i: "notes",
+              x: 8,
+              y: 0,
+              w: 2,
+              h: 4,
+              minW: 2,
+              maxW: 6,
+              minH: 4,
+              maxH: 10,
+            },
+          ];
+    }
+    return [];
   });
 
-  const [gridWidth, setGridWidth] = useState<number>(window.innerWidth);
+  const [gridWidth, setGridWidth] = useState<number>(
+    typeof window !== "undefined" ? window.innerWidth : 1200
+  );
 
   useEffect(() => {
-    const handleResize = () => {
-      setGridWidth(window.innerWidth);
-    };
+    if (typeof window !== "undefined") {
+      const handleResize = () => {
+        setGridWidth(window.innerWidth);
+      };
 
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+      window.addEventListener("resize", handleResize);
+      return () => window.removeEventListener("resize", handleResize);
+    }
   }, []);
 
-  const handleLayoutChange = (currentLayout: any) => {
+  const handleLayoutChange = (currentLayout: Layout[]) => {
     const cols = 12;
     const rowHeight = 30;
 
     const updatedSizes: { [key: string]: { width: number; height: number } } =
       {};
-    currentLayout.forEach((item: any) => {
+    currentLayout.forEach((item) => {
       updatedSizes[item.i] = {
         width: item.w * (gridWidth / cols),
         height: item.h * rowHeight,
@@ -84,13 +91,18 @@ export default function Home() {
     setWidgetSizes(updatedSizes);
     setLayout(currentLayout);
 
-    localStorage.setItem("dashboardLayout", JSON.stringify(currentLayout));
+    if (typeof window !== "undefined") {
+      localStorage.setItem("dashboardLayout", JSON.stringify(currentLayout));
+    }
   };
 
-  const handleResizeStop = (layout: any, oldItem: any, newItem: any) => {
-    // Überprüfen, ob das Timer Widget resized wurde
+  const handleResizeStop = (
+    layout: Layout[],
+    oldItem: Layout,
+    newItem: Layout
+  ) => {
     if (newItem.i === "timer") {
-      const updatedLayout = layout.map((item: any) => {
+      const updatedLayout = layout.map((item) => {
         if (item.i === "timer") {
           if (newItem.w > 3 || newItem.h > 5) {
             return { ...item, w: 4, h: 10 };
@@ -106,12 +118,14 @@ export default function Home() {
       setWidgetSizes((prev) => ({
         ...prev,
         timer: {
-          width: updatedLayout.find((item: any) => item.i === "timer").w * 100,
-          height: updatedLayout.find((item: any) => item.i === "timer").h * 30,
+          width: updatedLayout.find((item) => item.i === "timer")!.w * 100,
+          height: updatedLayout.find((item) => item.i === "timer")!.h * 30,
         },
       }));
 
-      localStorage.setItem("dashboardLayout", JSON.stringify(updatedLayout));
+      if (typeof window !== "undefined") {
+        localStorage.setItem("dashboardLayout", JSON.stringify(updatedLayout));
+      }
     }
   };
 

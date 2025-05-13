@@ -2,22 +2,26 @@ import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { getStockData } from "@/services/finance";
 
+interface StockData {
+  c: number; // Aktueller Preis
+  dp: number; // Preisänderung in Prozent
+}
+
 interface FinanceWidgetProps {
   width: number;
   height: number;
-  symbol?: string;
+  symbol: string;
 }
 
 const FinanceWidget: React.FC<FinanceWidgetProps> = ({ width, height }) => {
   const [symbols, setSymbols] = useState<string[]>([]);
   const [currentIndex, setCurrentIndex] = useState<number>(0);
-  const [preloadedData, setPreloadedData] = useState<{ [key: string]: any }>(
-    {}
-  );
-  const [loading, setLoading] = useState<boolean>(true);
+  const [preloadedData, setPreloadedData] = useState<{
+    [key: string]: StockData | null;
+  }>({});
   const [inputValue, setInputValue] = useState<string>("");
   const [showInput, setShowInput] = useState<boolean>(false);
-  const [direction, setDirection] = useState<"left" | "right">("right"); // Richtung der Animation
+  const [direction, setDirection] = useState<"left" | "right">("right");
 
   useEffect(() => {
     const savedSymbols = localStorage.getItem("financeSymbols");
@@ -31,8 +35,7 @@ const FinanceWidget: React.FC<FinanceWidgetProps> = ({ width, height }) => {
   }, []);
 
   const preloadStockData = async (symbols: string[]) => {
-    setLoading(true);
-    const data: { [key: string]: any } = {};
+    const data: { [key: string]: StockData | null } = {};
 
     for (const symbol of symbols) {
       try {
@@ -45,7 +48,6 @@ const FinanceWidget: React.FC<FinanceWidgetProps> = ({ width, height }) => {
     }
 
     setPreloadedData(data);
-    setLoading(false);
   };
 
   const saveSymbols = (newSymbols: string[]) => {
@@ -79,17 +81,11 @@ const FinanceWidget: React.FC<FinanceWidgetProps> = ({ width, height }) => {
     }
   };
 
-  const handleOpenInput = () => {
-    setInputValue(symbols.join(", "));
-    setShowInput(true);
-  };
-
   const currentSymbol = symbols[currentIndex];
   const stockData = preloadedData[currentSymbol];
 
   const isSmall = width <= 300 || height <= 200;
 
-  // Animationseinstellungen
   const variants = {
     enter: (direction: "left" | "right") => ({
       x: direction === "right" ? 300 : -300,
@@ -119,7 +115,6 @@ const FinanceWidget: React.FC<FinanceWidgetProps> = ({ width, height }) => {
           <button
             type="submit"
             className="mt-2 px-4 py-2 bg-blue-700 text-white rounded hover:bg-blue-800"
-            onMouseDown={(e) => e.stopPropagation()}
           >
             Save
           </button>
@@ -130,7 +125,6 @@ const FinanceWidget: React.FC<FinanceWidgetProps> = ({ width, height }) => {
             <button
               onClick={handlePrevious}
               className="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600"
-              onMouseDown={(e) => e.stopPropagation()}
             >
               ←
             </button>
@@ -138,7 +132,6 @@ const FinanceWidget: React.FC<FinanceWidgetProps> = ({ width, height }) => {
             <button
               onClick={handleNext}
               className="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600"
-              onMouseDown={(e) => e.stopPropagation()}
             >
               →
             </button>
@@ -206,14 +199,6 @@ const FinanceWidget: React.FC<FinanceWidgetProps> = ({ width, height }) => {
               </motion.div>
             </AnimatePresence>
           </div>
-
-          <button
-            onClick={handleOpenInput}
-            className="mt-4 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
-            onMouseDown={(e) => e.stopPropagation()}
-          >
-            +
-          </button>
         </>
       )}
     </div>

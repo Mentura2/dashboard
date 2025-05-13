@@ -1,16 +1,37 @@
 import React, { useEffect, useState } from "react";
 import { getWeather } from "@/services/weather";
 import { XMarkIcon } from "@heroicons/react/24/solid";
+import Image from "next/image";
 
-const WeatherWidget = ({
-  width,
-  height,
-}: {
+interface WeatherData {
+  location: {
+    name: string;
+  };
+  current: {
+    temp_c: number;
+    condition: {
+      text: string;
+      icon: string;
+    };
+  };
+  forecast: {
+    forecastday: {
+      day: {
+        mintemp_c: number;
+        maxtemp_c: number;
+      };
+    }[];
+  };
+}
+
+interface WeatherWidgetProps {
   width: number;
   height: number;
-}) => {
+}
+
+const WeatherWidget: React.FC<WeatherWidgetProps> = ({ width, height }) => {
   const [city, setCity] = useState<string | null>(null);
-  const [weatherData, setWeatherData] = useState<any>(null);
+  const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -166,10 +187,11 @@ const WeatherWidget = ({
 
             {weatherData?.current?.condition?.text && (
               <div className="flex items-center gap-2">
-                <img
+                <Image
                   src={weatherData.current.condition.icon}
                   alt="Condition Icon"
-                  className="w-8 h-8"
+                  width={32}
+                  height={32}
                 />
                 <span className="text-sm text-white">
                   {weatherData.current.condition.text}
