@@ -104,17 +104,23 @@ const FinanceWidget: React.FC<FinanceWidgetProps> = ({ width, height }) => {
   return (
     <div className="flex flex-col justify-between items-center h-full p-4 bg-gray-800 text-white rounded-lg">
       {showInput || symbols.length === 0 ? (
-        <form onSubmit={handleInputSubmit} className="w-full">
+        <form
+          onSubmit={handleInputSubmit}
+          className="w-full"
+          onMouseDown={(e) => e.stopPropagation()}
+        >
           <input
             type="text"
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             placeholder="Enter stocks (e.g., AAPL, TSLA)"
             className="w-full p-2 text-black rounded text-white"
+            onMouseDown={(e) => e.stopPropagation()}
           />
           <button
             type="submit"
             className="mt-2 px-4 py-2 bg-blue-700 text-white rounded hover:bg-blue-800"
+            onMouseDown={(e) => e.stopPropagation()}
           >
             Save
           </button>
@@ -125,6 +131,7 @@ const FinanceWidget: React.FC<FinanceWidgetProps> = ({ width, height }) => {
             <button
               onClick={handlePrevious}
               className="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600"
+              onMouseDown={(e) => e.stopPropagation()}
             >
               ←
             </button>
@@ -132,6 +139,7 @@ const FinanceWidget: React.FC<FinanceWidgetProps> = ({ width, height }) => {
             <button
               onClick={handleNext}
               className="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600"
+              onMouseDown={(e) => e.stopPropagation()}
             >
               →
             </button>

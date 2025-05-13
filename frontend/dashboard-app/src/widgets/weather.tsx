@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { getWeather } from "@/services/weather";
 import { XMarkIcon } from "@heroicons/react/24/solid";
-import Image from "next/image";
 
 interface WeatherData {
   location: {
@@ -180,6 +179,7 @@ const WeatherWidget: React.FC<WeatherWidgetProps> = ({ width, height }) => {
                 onClick={handleCityRemove}
                 className="ml-2 flex items-center justify-center"
                 title="Stadt entfernen"
+                onMouseDown={(e) => e.stopPropagation()}
               >
                 <XMarkIcon className="w-5 h-5 text-red-500 hover:text-red-700" />
               </button>
@@ -187,7 +187,7 @@ const WeatherWidget: React.FC<WeatherWidgetProps> = ({ width, height }) => {
 
             {weatherData?.current?.condition?.text && (
               <div className="flex items-center gap-2">
-                <Image
+                <img
                   src={weatherData.current.condition.icon}
                   alt="Condition Icon"
                   width={32}
